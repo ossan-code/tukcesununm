@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Merhaba! 🇹🇷 Turkish for Kindergarten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<script src="deck-stage.js"></script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --f-display: 'Fredoka One', cursive;
+  --f-body: 'Nunito', sans-serif;
+  --red: #E30A17;
+  --yellow: #FFD600;
+  --blue: #1565C0;
+}
+
+section { font-family: var(--f-body); overflow: hidden; position: relative; }
+
+/* ── KEYFRAMES ── */
+@keyframes bounceIn {
+  0%   { opacity:0; transform:scale(0.3) rotate(-8deg); }
+  55%  { opacity:1; transform:scale(1.12) rotate(2deg); }
+  75%  { transform:scale(0.96) rotate(-1deg); }
+  100% { opacity:1; transform:scale(1) rotate(0deg); }
+}
+@keyframes slideUp {
+  from { opacity:0; transform:translateY(70px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes slideLeft {
+  from { opacity:0; transform:translateX(80px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+@keyframes popIn {
+  0%   { opacity:0; transform:scale(0) rotate(-10deg); }
+  65%  { transform:scale(1.15) rotate(3deg); }
+  100% { opacity:1; transform:scale(1) rotate(0deg); }
+}
+@keyframes float {
+  0%,100% { transform:translateY(0); }
+  50%      { transform:translateY(-22px); }
+}
+@keyframes wiggle {
+  0%,100% { transform:rotate(0deg) scale(1); }
+  25%     { transform:rotate(-12deg) scale(1.05); }
+  75%     { transform:rotate(12deg) scale(1.05); }
+}
+@keyframes pulse {
+  0%,100% { transform:scale(1); }
+  50%     { transform:scale(1.07); }
+}
+@keyframes twinkle {
+  0%,100% { opacity:0.8; transform:scale(1); }
+  50%     { opacity:0.2; transform:scale(0.4); }
+}
+@keyframes letterDance {
+  0%,100% { transform:translateY(0) rotate(0deg); }
+  20%     { transform:translateY(-28px) rotate(-5deg); }
+  40%     { transform:translateY(-14px) rotate(3deg); }
+}
+@keyframes confettiFall {
+  0%   { transform:translateY(-60px) rotate(0deg) translateX(0); opacity:1; }
+  100% { transform:translateY(1150px) rotate(720deg) translateX(var(--dx,0px)); opacity:0.6; }
+}
+@keyframes shake {
+  0%,100% { transform:translateX(0) scale(1); }
+  20%     { transform:translateX(-18px) scale(0.97); }
+  40%     { transform:translateX(18px) scale(0.97); }
+  60%     { transform:translateX(-10px); }
+  80%     { transform:translateX(10px); }
+}
+@keyframes correctFlash {
+  0%   { background:rgba(255,255,255,0.25); }
+  30%  { background:rgba(100,220,100,0.5); transform:scale(1.06); }
+  100% { background:rgba(100,220,100,0.3); transform:scale(1); }
+}
+@keyframes spin {
+  from { transform:rotate(0deg); }
+  to   { transform:rotate(360deg); }
+}
+@keyframes fadeInScale {
+  from { opacity:0; transform:scale(0.7); }
+  to   { opacity:1; transform:scale(1); }
+}
+@keyframes planefly {
+  0%   { left:12%; top:52%; transform:scale(1) rotate(-10deg); opacity:0; }
+  8%   { opacity:1; }
+  60%  { left:72%; top:20%; transform:scale(1.1) rotate(-10deg); opacity:1; }
+  80%  { left:82%; top:24%; transform:scale(0.9) rotate(-5deg); opacity:1; }
+  100% { left:84%; top:26%; transform:scale(0.85) rotate(0deg); opacity:0.9; }
+}
+@keyframes trailFade {
+  0%   { opacity:0.7; width:0; }
+  60%  { opacity:0.5; }
+  100% { opacity:0; width:62%; }
+}
+@keyframes overlayIn {
+  from { opacity:0; transform:scale(0.88); }
+  to   { opacity:1; transform:scale(1); }
+}
+@keyframes numZoom {
+  0%   { transform:scale(0.3) rotate(-12deg); opacity:0; }
+  60%  { transform:scale(1.15) rotate(4deg); opacity:1; }
+  100% { transform:scale(1) rotate(0deg); opacity:1; }
+}
+
+/* ── CARD OVERLAY MODAL ── */
+.card-overlay {
+  display:none;
+  position:absolute;
+  inset:0;
+  z-index:100;
+  background:rgba(0,0,0,0.72);
+  align-items:center;
+  justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.card-overlay.open { display:flex; }
+.overlay-inner {
+  animation: overlayIn .4s cubic-bezier(.34,1.56,.64,1);
+  max-width:82%;
+  max-height:82%;
+  border-radius:28px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+}
+.overlay-close {
+  position:absolute;top:14px;right:18px;
+  font-size:42px;cursor:pointer;color:white;
+  text-shadow:0 2px 8px rgba(0,0,0,0.5);
+  z-index:10;
+  background:rgba(0,0,0,0.4);
+  border-radius:50%;width:52px;height:52px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.overlay-close:hover { background:rgba(0,0,0,0.7); }
+
+/* ── PLANE ANIMATION ── */
+.plane-map {
+  position:relative;
+  width:860px; height:420px;
+  background:linear-gradient(160deg,#1a6fba 0%,#2196F3 60%,#81D4FA 100%);
+  border-radius:24px;
+  overflow:hidden;
+  padding:20px;
+}
+.plane-map-bg {
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 300px 180px at 15% 60%, rgba(34,139,34,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 220px 140px at 85% 55%, rgba(160,82,45,0.3) 0%, transparent 70%),
+    linear-gradient(160deg,#1a6fba 0%,#2196F3 60%,#81D4FA 100%);
+}
+.flag-de { position:absolute;left:8%;top:44%;font-size:52px;filter:drop-shadow(2px 2px 6px rgba(0,0,0,0.4)); }
+.flag-tr { position:absolute;right:8%;top:36%;font-size:52px;filter:drop-shadow(2px 2px 6px rgba(0,0,0,0.4)); }
+.plane-icon {
+  position:absolute;
+  font-size:52px;
+  left:12%;top:52%;
+  animation:planefly 3.2s cubic-bezier(.4,0,.2,1) forwards;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+}
+.plane-trail {
+  position:absolute;
+  left:12%;top:54%;
+  height:3px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.9));
+  transform-origin:left center;
+  animation:trailFade 3.2s ease forwards;
+  border-radius:2px;
+}
+.plane-label {
+  position:absolute;
+  bottom:20px;left:0;right:0;
+  text-align:center;
+  font-family:'Fredoka One',cursive;
+  font-size:32px;
+  color:white;
+  text-shadow:0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* ── NUMBER BIG ZOOM OVERLAY ── */
+.num-zoom-overlay {
+  display:none;
+  position:absolute;inset:0;z-index:100;
+  background:rgba(0,0,0,0.75);
+  align-items:center;justify-content:center;
+  flex-direction:column;
+  backdrop-filter:blur(6px);
+  cursor:pointer;
+}
+.num-zoom-overlay.open { display:flex; }
+.num-big {
+  animation:numZoom .5s cubic-bezier(.34,1.56,.64,1);
+  text-align:center;
+  user-select:none;
+}
+
+/* ── COLOR BIG ZOOM OVERLAY ── */
+.color-zoom-overlay {
+  display:none;
+  position:absolute;inset:0;z-index:100;
+  align-items:center;justify-content:center;
+  flex-direction:column;
+  cursor:pointer;
+  backdrop-filter:blur(2px);
+}
+.color-zoom-overlay.open { display:flex; }
+.color-big {
+  animation:numZoom .5s cubic-bezier(.34,1.56,.64,1);
+  text-align:center;
+  padding:60px 100px;
+  border-radius:36px;
+  user-select:none;
+}
+
+/* ── ANIMATED ELEMENT SYSTEM ── */
+/* .ae elements are hidden by JS (el.style.opacity='0') in applyDelays,
+   NOT by a CSS rule — this avoids cascade fights with animation fill-mode.
+   .ae-done is stamped by onAeDone after entrance, holding opacity:1. */
+.ae-done { opacity:1 !important; }
+
+/* ── CARD INTERACTION ── */
+.clickcard { cursor:pointer; transition:transform .15s ease; }
+.clickcard:hover { transform:scale(1.04) !important; filter:brightness(1.1); }
+.clickcard:active { transform:scale(0.97) !important; }
+
+/* ── GAME OPTION BUTTONS ── */
+.opt-btn {
+  font-family: var(--f-display);
+  font-size: 46px;
+  padding: 22px 50px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  background: rgba(255,255,255,0.22);
+  color: white;
+  transition: all .2s;
+}
+.opt-btn:hover { background:rgba(255,255,255,0.38); transform:scale(1.05); }
+.opt-btn.correct { animation: correctFlash .5s ease forwards; background:rgba(100,220,100,0.4) !important; }
+.opt-btn.wrong   { animation: shake .4s ease; background:rgba(220,60,60,0.4) !important; }
+
+/* ── BODY PART CARD ── */
+.bp-card {
+  background: rgba(255,255,255,0.15);
+  border-radius:18px; padding:18px 24px;
+  display:flex; align-items:center; gap:16px;
+  cursor:pointer; transition:all .2s;
+}
+.bp-card:hover { background:rgba(255,255,255,0.28); transform:scale(1.04); }
+.bp-card.active { background:rgba(255,220,0,0.35); transform:scale(1.06); border:3px solid #FFD600; }
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 1 — TITLE
+══════════════════════════════════════════════════════════ -->
+<section data-label="Title" style="background:linear-gradient(140deg,#0d1b6e 0%,#1a3a8f 55%,#1565C0 100%);">
+  <div id="stars-bg" style="position:absolute;inset:0;pointer-events:none;"></div>
+
+  <div class="ae" data-delay="800" style="position:absolute;top:70px;left:90px;"><div style="font-size:100px;animation:float 3.2s ease-in-out infinite;">🇹🇷</div></div>
+  <div class="ae" data-delay="1000" style="position:absolute;top:90px;right:110px;"><div style="font-size:70px;animation:float 3.8s ease-in-out infinite .6s;">🇩🇪</div></div>
+  <div class="ae" data-delay="1100" style="position:absolute;bottom:110px;left:130px;"><div style="font-size:70px;animation:float 3s ease-in-out infinite 1s;">🇬🇧</div></div>
+  <div class="ae" data-delay="1200" style="position:absolute;bottom:130px;right:160px;"><div style="font-size:60px;animation:wiggle 2.5s ease-in-out infinite;">⭐</div></div>
+  <div style="position:absolute;width:500px;height:500px;border-radius:50%;background:rgba(255,255,255,0.04);top:-140px;right:-140px;"></div>
+  <div style="position:absolute;width:380px;height:380px;border-radius:50%;background:rgba(255,255,255,0.04);bottom:-100px;left:-100px;"></div>
+
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:0;">
+    <div id="title-letters" style="display:flex;gap:4px;justify-content:center;" class="ae" data-delay="100" data-anim="bounceIn">
+      <!-- letters built in JS -->
+    </div>
+    <div class="ae" data-delay="600" data-anim="slideUp" style="font-family:var(--f-display);font-size:52px;color:white;margin-top:16px;letter-spacing:2px;">
+      a Türkçe storybook for our kindergarten friends
+    </div>
+    <div class="ae" data-delay="800" data-anim="slideUp" style="font-size:40px;color:rgba(255,255,255,0.75);margin-top:16px;display:flex;gap:20px;align-items:center;">
+      <span>hello</span><span style="opacity:.5">·</span><span>hallo</span><span style="opacity:.5">·</span><span style="color:#FFD600;font-family:var(--f-display);">merhaba</span>
+    </div>
+    <div class="ae" data-delay="1000" data-anim="fadeInScale" style="margin-top:28px;font-size:36px;color:rgba(255,255,255,0.55);">
+      a story told by a parent &amp; their little one 🌟
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 2 — WHERE IS TÜRKİYE?
+══════════════════════════════════════════════════════════ -->
+<section data-label="Where is Türkiye" style="background:linear-gradient(135deg,#01579B 0%,#0277BD 55%,#29B6F6 100%);">
+  <div style="position:absolute;right:-120px;top:50%;transform:translateY(-50%);width:400px;height:400px;border-radius:50%;background:rgba(255,255,255,0.08);pointer-events:none;animation:pulse 6s ease-in-out infinite;"></div>
+  <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:70px 120px;">
+    <div class="ae" data-delay="100" data-anim="slideUp" style="font-family:var(--f-display);font-size:82px;color:#FFD600;margin-bottom:38px;">Where is Türkiye? 🌍</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+      <div class="ae clickcard" data-delay="250" data-anim="slideUp" onclick="showPlaneAnim()" style="background:rgba(255,255,255,0.18);border-radius:24px;padding:36px;backdrop-filter:blur(6px);">
+        <div style="font-size:58px;margin-bottom:10px;">✈️</div>
+        <div style="font-family:var(--f-display);font-size:46px;color:white;">3 hours from Germany</div>
+        <div style="font-size:32px;color:rgba(255,255,255,0.82);margin-top:6px;">just a short flight away!</div>
+      </div>
+      <div class="ae clickcard" data-delay="400" data-anim="slideUp" onclick="showIstanbul()" style="background:rgba(255,255,255,0.18);border-radius:24px;padding:36px;backdrop-filter:blur(6px);">
+        <div style="font-size:58px;margin-bottom:10px;">🏙️</div>
+        <div style="font-family:var(--f-display);font-size:46px;color:white;">İstanbul is HUGE!</div>
+        <div style="font-size:32px;color:rgba(255,255,255,0.82);margin-top:6px;">15 million people — more than Bavaria!</div>
+      </div>
+      <div class="ae clickcard" data-delay="550" data-anim="slideUp" onclick="showBeach()" style="background:rgba(255,255,255,0.18);border-radius:24px;padding:36px;backdrop-filter:blur(6px);">
+        <div style="font-size:58px;margin-bottom:10px;">☀️</div>
+        <div style="font-family:var(--f-display);font-size:46px;color:white;">Sun, beaches &amp; mountains</div>
+        <div style="font-size:32px;color:rgba(255,255,255,0.82);margin-top:6px;">mountains, sea and sunshine</div>
+      </div>
+      <div class="ae clickcard" data-delay="700" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.18);border-radius:24px;padding:36px;backdrop-filter:blur(6px);">
+        <div style="font-size:58px;margin-bottom:10px;">🗣️</div>
+        <div style="font-family:var(--f-display);font-size:46px;color:white;">We speak Türkçe!</div>
+        <div style="font-size:32px;color:rgba(255,255,255,0.82);margin-top:6px;">the language of Türkiye</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLANE ANIMATION OVERLAY -->
+  <div class="card-overlay" id="plane-overlay" onclick="closeOverlay('plane-overlay')">
+    <div class="overlay-inner" onclick="event.stopPropagation()">
+      <div class="overlay-close" onclick="closeOverlay('plane-overlay')">✕</div>
+      <div class="plane-map" id="plane-map">
+        <div class="plane-map-bg"></div>
+        <div class="flag-de">🇩🇪</div>
+        <div class="flag-tr">🇹🇷</div>
+        <div class="plane-trail" id="plane-trail"></div>
+        <div class="plane-icon" id="plane-icon">✈️</div>
+        <div class="plane-label">✈️ München → İstanbul · 3 Stunden · 3 hours!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ISTANBUL OVERLAY -->
+  <div class="card-overlay" id="istanbul-overlay" onclick="closeOverlay('istanbul-overlay')">
+    <div class="overlay-inner" onclick="event.stopPropagation()" style="background:#000;max-width:900px;">
+      <div class="overlay-close" onclick="closeOverlay('istanbul-overlay')">✕</div>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Bosphorus_Bridge_-_001.jpg/1280px-Bosphorus_Bridge_-_001.jpg"
+           alt="Istanbul Bosphorus" style="width:100%;display:block;border-radius:28px;"
+           onerror="this.parentElement.innerHTML='<div style=\'padding:60px;text-align:center;background:linear-gradient(135deg,#01579B,#1565C0);border-radius:28px\'><div style=\'font-size:120px\'>🌉</div><div style=\'font-family:Fredoka One,cursive;font-size:48px;color:white;margin-top:16px\'>İstanbul Boğazı</div><div style=\'font-size:30px;color:rgba(255,255,255,0.8);margin-top:8px\'>The Bosphorus Bridge • 15 Million People!</div></div>'">
+      <div style="background:linear-gradient(0deg,rgba(0,0,0,0.8),transparent);padding:24px 28px 20px;position:absolute;bottom:0;left:0;right:0;border-radius:0 0 28px 28px;">
+        <div style="font-family:'Fredoka One',cursive;font-size:38px;color:#FFD600;">İstanbul Boğazı 🌉</div>
+        <div style="font-size:26px;color:rgba(255,255,255,0.85);">The Bosphorus — where Europe meets Asia!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BEACH OVERLAY -->
+  <div class="card-overlay" id="beach-overlay" onclick="closeOverlay('beach-overlay')">
+    <div class="overlay-inner" onclick="event.stopPropagation()" style="background:#000;max-width:900px;">
+      <div class="overlay-close" onclick="closeOverlay('beach-overlay')">✕</div>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Oludeniz1.jpg/1280px-Oludeniz1.jpg"
+           alt="Ölüdeniz Beach" style="width:100%;display:block;border-radius:28px;"
+           onerror="this.parentElement.innerHTML='<div style=\'padding:60px;text-align:center;background:linear-gradient(135deg,#0277BD,#00BCD4);border-radius:28px\'><div style=\'font-size:120px\'>🏖️</div><div style=\'font-family:Fredoka One,cursive;font-size:48px;color:white;margin-top:16px\'>Ölüdeniz</div><div style=\'font-size:30px;color:rgba(255,255,255,0.85);margin-top:8px\'>The Blue Lagoon of Türkiye!</div></div>'">
+      <div style="background:linear-gradient(0deg,rgba(0,0,0,0.8),transparent);padding:24px 28px 20px;position:absolute;bottom:0;left:0;right:0;border-radius:0 0 28px 28px;">
+        <div style="font-family:'Fredoka One',cursive;font-size:38px;color:#FFD600;">Ölüdeniz 🏖️</div>
+        <div style="font-size:26px;color:rgba(255,255,255,0.85);">The Blue Lagoon — most beautiful beach in Türkiye!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 3 — GREETINGS
+══════════════════════════════════════════════════════════ -->
+<section data-label="Greetings" style="background:linear-gradient(135deg,#E65100 0%,#EF6C00 50%,#FFB300 100%);">
+  <div style="position:absolute;bottom:0;left:0;right:0;height:220px;background:rgba(255,255,255,0.07);border-radius:120% 120% 0 0;pointer-events:none;"></div>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:70px 120px;">
+    <div class="ae" data-delay="80" data-anim="bounceIn" style="font-family:var(--f-display);font-size:82px;color:white;margin-bottom:44px;text-shadow:3px 3px 0 rgba(0,0,0,0.18);">👋 Say it loud!</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;">
+      <div class="ae clickcard" data-delay="180" data-anim="popIn" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.22);border-radius:22px;padding:28px;text-align:center;">
+        <div style="font-size:54px;margin-bottom:8px;">👋</div>
+        <div style="font-family:var(--f-display);font-size:50px;color:white;">Merhaba!</div>
+        <div style="font-size:30px;color:rgba(255,255,255,0.88);margin-top:6px;">Hallo! · Hello!</div>
+        <div style="font-size:24px;color:rgba(255,255,255,0.65);margin-top:4px;letter-spacing:5px;font-weight:900;">MER-HA-BA</div>
+      </div>
+      <div class="ae clickcard" data-delay="280" data-anim="popIn" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.22);border-radius:22px;padding:28px;text-align:center;">
+        <div style="font-size:54px;margin-bottom:8px;">🌅</div>
+        <div style="font-family:var(--f-display);font-size:50px;color:white;">Günaydın</div>
+        <div style="font-size:30px;color:rgba(255,255,255,0.88);margin-top:6px;">Guten Morgen</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.65);margin-top:4px;">Good Morning!</div>
+      </div>
+      <div class="ae clickcard" data-delay="380" data-anim="popIn" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.22);border-radius:22px;padding:28px;text-align:center;">
+        <div style="font-size:54px;margin-bottom:8px;">🌙</div>
+        <div style="font-family:var(--f-display);font-size:50px;color:white;">İyi geceler</div>
+        <div style="font-size:30px;color:rgba(255,255,255,0.88);margin-top:6px;">Gute Nacht</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.65);margin-top:4px;">Good Night!</div>
+      </div>
+      <div class="ae clickcard" data-delay="480" data-anim="popIn" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.22);border-radius:22px;padding:28px;text-align:center;">
+        <div style="font-size:54px;margin-bottom:8px;">🙏</div>
+        <div style="font-family:var(--f-display);font-size:50px;color:white;">Teşekkürler</div>
+        <div style="font-size:30px;color:rgba(255,255,255,0.88);margin-top:6px;">Danke</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.65);margin-top:4px;">Thank You!</div>
+      </div>
+      <div class="ae clickcard" data-delay="580" data-anim="popIn" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.22);border-radius:22px;padding:28px;text-align:center;">
+        <div style="font-size:54px;margin-bottom:8px;">😊</div>
+        <div style="font-family:var(--f-display);font-size:50px;color:white;">Lütfen</div>
+        <div style="font-size:30px;color:rgba(255,255,255,0.88);margin-top:6px;">Bitte</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.65);margin-top:4px;">Please!</div>
+      </div>
+      <div class="ae clickcard" data-delay="680" data-anim="popIn" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.22);border-radius:22px;padding:28px;text-align:center;">
+        <div style="font-size:54px;margin-bottom:8px;">✅❌</div>
+        <div style="font-family:var(--f-display);font-size:50px;color:white;">Evet / Hayır</div>
+        <div style="font-size:30px;color:rgba(255,255,255,0.88);margin-top:6px;">Ja / Nein</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.65);margin-top:4px;">Yes / No!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 4 — LET'S COUNT
+══════════════════════════════════════════════════════════ -->
+<section data-label="Let's Count" style="background:linear-gradient(135deg,#4A148C 0%,#6A1B9A 55%,#8E24AA 100%);">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:50px 100px;">
+    <div class="ae" data-delay="80" data-anim="bounceIn" style="font-family:var(--f-display);font-size:80px;color:#FFD600;margin-bottom:32px;text-align:center;">🔢 Let's Count!  bir, iki, üç...</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:18px;" id="count-grid">
+    </div>
+    <div class="ae" data-delay="1200" data-anim="slideUp" style="text-align:center;font-size:30px;color:rgba(255,255,255,0.5);margin-top:18px;">👆 Tap a number to make it big!</div>
+  </div>
+
+  <!-- NUM ZOOM OVERLAY -->
+  <div class="num-zoom-overlay" id="num-zoom-overlay" onclick="closeNumZoom()">
+    <div class="num-big">
+      <div id="nz-emoji" style="font-size:160px;line-height:1;"></div>
+      <div id="nz-num" style="font-family:'Fredoka One',cursive;font-size:260px;color:#FFD600;line-height:0.9;text-shadow:8px 8px 0 rgba(0,0,0,0.3);"></div>
+      <div id="nz-word" style="font-family:'Fredoka One',cursive;font-size:110px;color:white;margin-top:10px;text-shadow:4px 4px 0 rgba(0,0,0,0.25);"></div>
+    </div>
+    <div style="font-size:28px;color:rgba(255,255,255,0.5);margin-top:30px;">tap anywhere to close</div>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 5 — NOISY ZOO
+══════════════════════════════════════════════════════════ -->
+<section data-label="Noisy Zoo" style="background:linear-gradient(135deg,#1B5E20 0%,#2E7D32 50%,#388E3C 100%);">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:55px 100px;">
+    <div class="ae" data-delay="80" data-anim="bounceIn" style="font-family:var(--f-display);font-size:82px;color:#FFD600;margin-bottom:16px;text-align:center;">🦁 The Noisy Zoo! 🦁</div>
+    <div class="ae" data-delay="200" data-anim="slideUp" style="font-size:34px;color:rgba(255,255,255,0.8);text-align:center;margin-bottom:28px;">Turkish animals make different sounds! Tap to hear them! 👆</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;">
+      <div class="ae clickcard" data-delay="300" data-anim="slideLeft" onclick="animalSound(this,'Hav hav! 🐶'); playAnimalSound('dog')" style="background:rgba(255,255,255,0.15);border-radius:24px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:60px;flex-shrink:0;">🐶</span>
+        <div style="flex:1;">
+          <div style="font-family:var(--f-display);font-size:46px;color:white;">Köpek</div>
+          <div style="font-size:28px;color:rgba(255,255,255,0.7);">Hund · Dog</div>
+          <div class="snd" style="font-family:var(--f-display);font-size:38px;color:#FFD600;opacity:0;transform:scale(0);transition:all .3s cubic-bezier(.34,1.56,.64,1);">Hav hav! 🔊</div>
+        </div>
+      </div>
+      <div class="ae clickcard" data-delay="380" data-anim="slideLeft" onclick="animalSound(this,'Miyav! 🐱'); playAnimalSound('cat')" style="background:rgba(255,255,255,0.15);border-radius:24px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:60px;flex-shrink:0;">🐱</span>
+        <div style="flex:1;">
+          <div style="font-family:var(--f-display);font-size:46px;color:white;">Kedi</div>
+          <div style="font-size:28px;color:rgba(255,255,255,0.7);">Katze · Cat</div>
+          <div class="snd" style="font-family:var(--f-display);font-size:38px;color:#FFD600;opacity:0;transform:scale(0);transition:all .3s cubic-bezier(.34,1.56,.64,1);">Miyav! 🔊</div>
+        </div>
+      </div>
+      <div class="ae clickcard" data-delay="460" data-anim="slideLeft" onclick="animalSound(this,'Möö! 🐄'); playAnimalSound('cow')" style="background:rgba(255,255,255,0.15);border-radius:24px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:60px;flex-shrink:0;">🐄</span>
+        <div style="flex:1;">
+          <div style="font-family:var(--f-display);font-size:46px;color:white;">İnek</div>
+          <div style="font-size:28px;color:rgba(255,255,255,0.7);">Kuh · Cow</div>
+          <div class="snd" style="font-family:var(--f-display);font-size:38px;color:#FFD600;opacity:0;transform:scale(0);transition:all .3s cubic-bezier(.34,1.56,.64,1);">Möö! 🔊</div>
+        </div>
+      </div>
+      <div class="ae clickcard" data-delay="540" data-anim="slideLeft" onclick="animalSound(this,'Mee! 🐑'); playAnimalSound('sheep')" style="background:rgba(255,255,255,0.15);border-radius:24px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:60px;flex-shrink:0;">🐑</span>
+        <div style="flex:1;">
+          <div style="font-family:var(--f-display);font-size:46px;color:white;">Koyun</div>
+          <div style="font-size:28px;color:rgba(255,255,255,0.7);">Schaf · Sheep</div>
+          <div class="snd" style="font-family:var(--f-display);font-size:38px;color:#FFD600;opacity:0;transform:scale(0);transition:all .3s cubic-bezier(.34,1.56,.64,1);">Mee! 🔊</div>
+        </div>
+      </div>
+      <div class="ae clickcard" data-delay="620" data-anim="slideLeft" onclick="animalSound(this,'Vrak vrak! 🐸'); playAnimalSound('frog')" style="background:rgba(255,255,255,0.15);border-radius:24px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:60px;flex-shrink:0;">🐸</span>
+        <div style="flex:1;">
+          <div style="font-family:var(--f-display);font-size:46px;color:white;">Kurbağa</div>
+          <div style="font-size:28px;color:rgba(255,255,255,0.7);">Frosch · Frog</div>
+          <div class="snd" style="font-family:var(--f-display);font-size:38px;color:#FFD600;opacity:0;transform:scale(0);transition:all .3s cubic-bezier(.34,1.56,.64,1);">Vrak vrak! 🔊</div>
+        </div>
+      </div>
+      <div class="ae clickcard" data-delay="700" data-anim="slideLeft" onclick="animalSound(this,'Raaar! 🦁'); playAnimalSound('lion')" style="background:rgba(255,255,255,0.15);border-radius:24px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:60px;flex-shrink:0;">🦁</span>
+        <div style="flex:1;">
+          <div style="font-family:var(--f-display);font-size:46px;color:white;">Aslan</div>
+          <div style="font-size:28px;color:rgba(255,255,255,0.7);">Löwe · Lion</div>
+          <div class="snd" style="font-family:var(--f-display);font-size:38px;color:#FFD600;opacity:0;transform:scale(0);transition:all .3s cubic-bezier(.34,1.56,.64,1);">Raaar! 🔊</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 6 — COLORS
+══════════════════════════════════════════════════════════ -->
+<section data-label="Colors" style="background:#F8F8F8;">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:60px 100px;">
+    <div class="ae" data-delay="80" data-anim="bounceIn" style="font-family:var(--f-display);font-size:82px;color:#333;margin-bottom:16px;text-align:center;">🎨 A Box of Colors!</div>
+    <div class="ae" data-delay="220" data-anim="slideUp" style="font-size:34px;color:#666;text-align:center;margin-bottom:28px;">Point to something this color in the room! 👆</div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;">
+      <div class="ae clickcard" data-delay="300" data-anim="popIn" onclick="showColor('#E30A17','Kırmızı','Rot · Red','🔴')" style="background:#E30A17;border-radius:20px;padding:26px 12px;text-align:center;">
+        <div style="font-family:var(--f-display);font-size:42px;color:white;">Kırmızı</div>
+        <div style="font-size:27px;color:rgba(255,255,255,0.85);">Rot · Red</div>
+      </div>
+      <div class="ae clickcard" data-delay="380" data-anim="popIn" onclick="showColor('#1565C0','Mavi','Blau · Blue','🔵')" style="background:#1565C0;border-radius:20px;padding:26px 12px;text-align:center;">
+        <div style="font-family:var(--f-display);font-size:42px;color:white;">Mavi</div>
+        <div style="font-size:27px;color:rgba(255,255,255,0.85);">Blau · Blue</div>
+      </div>
+      <div class="ae clickcard" data-delay="460" data-anim="popIn" onclick="showColor('#F9A825','Sarı','Gelb · Yellow','🟡')" style="background:#F9A825;border-radius:20px;padding:26px 12px;text-align:center;">
+        <div style="font-family:var(--f-display);font-size:42px;color:white;">Sarı</div>
+        <div style="font-size:27px;color:rgba(255,255,255,0.9);">Gelb · Yellow</div>
+      </div>
+      <div class="ae clickcard" data-delay="540" data-anim="popIn" onclick="showColor('#2E7D32','Yeşil','Grün · Green','🟢')" style="background:#2E7D32;border-radius:20px;padding:26px 12px;text-align:center;">
+        <div style="font-family:var(--f-display);font-size:42px;color:white;">Yeşil</div>
+        <div style="font-size:27px;color:rgba(255,255,255,0.85);">Grün · Green</div>
+      </div>
+      <div class="ae clickcard" data-delay="620" data-anim="popIn" onclick="showColor('#6A1B9A','Mor','Lila · Purple','🟣')" style="background:#6A1B9A;border-radius:20px;padding:26px 12px;text-align:center;">
+        <div style="font-family:var(--f-display);font-size:42px;color:white;">Mor</div>
+        <div style="font-size:27px;color:rgba(255,255,255,0.85);">Lila · Purple</div>
+      </div>
+      <div class="ae clickcard" data-delay="700" data-anim="popIn" onclick="showColor('#E65100','Turuncu','Orange','🟠')" style="background:#E65100;border-radius:20px;padding:26px 12px;text-align:center;">
+        <div style="font-family:var(--f-display);font-size:42px;color:white;">Turuncu</div>
+        <div style="font-size:27px;color:rgba(255,255,255,0.85);">Orange</div>
+      </div>
+      <div class="ae clickcard" data-delay="780" data-anim="popIn" onclick="showColor('#C2185B','Pembe','Rosa · Pink','🩷')" style="background:#C2185B;border-radius:20px;padding:26px 12px;text-align:center;">
+        <div style="font-family:var(--f-display);font-size:42px;color:white;">Pembe</div>
+        <div style="font-size:27px;color:rgba(255,255,255,0.85);">Rosa · Pink</div>
+      </div>
+      <div class="ae clickcard" data-delay="860" data-anim="popIn" onclick="showColor('#212121','Siyah','Schwarz · Black','⬛')" style="background:#212121;border-radius:20px;padding:26px 12px;text-align:center;">
+        <div style="font-family:var(--f-display);font-size:42px;color:white;">Siyah</div>
+        <div style="font-size:27px;color:rgba(255,255,255,0.7);">Schwarz · Black</div>
+      </div>
+      <div class="ae clickcard" data-delay="940" data-anim="popIn" onclick="showColor('#F5F5F5','Beyaz','Weiß · White','⬜','#333')" style="background:#F5F5F5;border:3px solid #DDD;border-radius:20px;padding:26px 12px;text-align:center;">
+        <div style="font-family:var(--f-display);font-size:42px;color:#333;">Beyaz</div>
+        <div style="font-size:27px;color:#777;">Weiß · White</div>
+      </div>
+      <div class="ae clickcard" data-delay="1020" data-anim="popIn" onclick="showColor('linear-gradient(135deg,#E30A17,#FF6B35,#FFD600,#2ECC71,#1565C0,#6A1B9A)','Gökkuşağı','Regenbogen','🌈')" style="background:linear-gradient(135deg,#E30A17,#FF6B35,#FFD600,#2ECC71,#1565C0,#6A1B9A);border-radius:20px;padding:26px 12px;text-align:center;">
+        <div style="font-family:var(--f-display);font-size:38px;color:white;text-shadow:1px 1px 4px rgba(0,0,0,0.4);">Gökkuşağı</div>
+        <div style="font-size:27px;color:white;text-shadow:1px 1px 3px rgba(0,0,0,0.4);">Regenbogen 🌈</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLOR ZOOM OVERLAY -->
+  <div class="color-zoom-overlay" id="color-zoom-overlay" onclick="closeColorZoom()">
+    <div class="color-big" id="color-zoom-inner">
+      <div id="cz-emoji" style="font-size:140px;line-height:1;"></div>
+      <div id="cz-word" style="font-family:'Fredoka One',cursive;font-size:180px;line-height:1;margin-top:10px;text-shadow:6px 6px 0 rgba(0,0,0,0.2);"></div>
+      <div id="cz-trans" style="font-family:'Fredoka One',cursive;font-size:70px;margin-top:14px;opacity:0.85;"></div>
+    </div>
+    <div style="font-size:28px;color:rgba(255,255,255,0.5);margin-top:30px;">tap anywhere to close</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 7 — GAME 1: GUESS THE WORD
+══════════════════════════════════════════════════════════ -->
+<section data-label="Game 1 - Guess the Word" style="background:linear-gradient(135deg,#0D47A1 0%,#1565C0 55%,#1976D2 100%);">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 100px;">
+    <div class="ae" data-delay="80" data-anim="bounceIn" style="background:#FFD600;color:#1a1a1a;font-family:var(--f-display);font-size:40px;padding:12px 50px;border-radius:50px;margin-bottom:24px;">🎮 GAME 1 — Guess the Word!</div>
+    <div id="g1-emoji" style="font-size:130px;animation:float 3s ease-in-out infinite;margin-bottom:14px;transition:transform .2s ease,opacity .2s ease;"></div>
+    <div id="g1-prompt" style="font-family:var(--f-display);font-size:52px;color:white;margin-bottom:30px;text-align:center;">What does this mean? · Was bedeutet das?</div>
+    <div id="g1-options" style="display:flex;gap:26px;flex-wrap:wrap;justify-content:center;"></div>
+    <div id="g1-feedback" style="font-family:var(--f-display);font-size:70px;margin-top:22px;opacity:0;transform:scale(0);transition:all .4s cubic-bezier(.34,1.56,.64,1);"></div>
+    <div id="g1-score" style="font-size:32px;color:rgba(255,255,255,0.55);margin-top:12px;"></div>
+    <button id="g1-next" onclick="nextG1()" style="display:none;margin-top:16px;background:#FFD600;color:#1a1a1a;border:none;font-family:var(--f-display);font-size:40px;padding:16px 60px;border-radius:50px;cursor:pointer;animation:pulse 1.2s ease-in-out infinite;">Next →</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 8 — GAME 2: SAY IT WITH ME
+══════════════════════════════════════════════════════════ -->
+<section data-label="Game 2 - Say it With Me" style="background:linear-gradient(135deg,#B71C1C 0%,#C62828 55%,#D32F2F 100%);">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 100px;">
+    <div class="ae" data-delay="80" data-anim="bounceIn" style="background:#FFD600;color:#1a1a1a;font-family:var(--f-display);font-size:40px;padding:12px 50px;border-radius:50px;margin-bottom:26px;">🎮 GAME 2 — Say it with me!</div>
+    <div class="ae" data-delay="220" data-anim="slideUp" style="font-size:34px;color:rgba(255,255,255,0.8);margin-bottom:30px;">Everyone repeats — then clap together! 👏</div>
+    <div id="g2-emoji" style="font-size:80px;min-height:90px;"></div>
+    <div id="g2-word" style="font-family:var(--f-display);font-size:110px;color:#FFD600;min-height:130px;line-height:1.1;transition:all .4s cubic-bezier(.34,1.56,.64,1);"></div>
+    <div id="g2-trans" style="font-size:46px;color:white;margin-top:8px;min-height:60px;"></div>
+    <div style="display:flex;gap:28px;margin-top:34px;">
+      <button onclick="g2Prev()" style="background:rgba(255,255,255,0.2);color:white;border:none;font-family:var(--f-display);font-size:38px;padding:16px 48px;border-radius:50px;cursor:pointer;">← Back</button>
+      <button onclick="g2Next()" style="background:#FFD600;color:#1a1a1a;border:none;font-family:var(--f-display);font-size:38px;padding:16px 56px;border-radius:50px;cursor:pointer;">Next →</button>
+    </div>
+    <div id="g2-clap" style="font-size:72px;opacity:0;margin-top:18px;transition:opacity .4s;animation:wiggle .6s ease-in-out infinite;">👏 👏 👏</div>
+    <div id="g2-prog" style="margin-top:16px;font-size:28px;color:rgba(255,255,255,0.45);"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 9 — GAME 3: TOUCH YOUR BODY
+══════════════════════════════════════════════════════════ -->
+<section data-label="Game 3 - Body Parts" style="background:linear-gradient(135deg,#004D40 0%,#00695C 55%,#00796B 100%);">
+  <div style="position:absolute;inset:0;display:flex;align-items:center;padding:60px 100px;gap:60px;">
+    <div style="flex:1;">
+      <div class="ae" data-delay="80" data-anim="bounceIn" style="background:#FFD600;color:#1a1a1a;font-family:var(--f-display);font-size:36px;padding:10px 36px;border-radius:50px;margin-bottom:24px;display:inline-block;">🎮 GAME 3 — Touch your...</div>
+      <div class="ae" data-delay="200" data-anim="slideUp" style="font-size:30px;color:rgba(255,255,255,0.8);margin-bottom:22px;">I say the word — you point to it on your body! 👆</div>
+      <div id="g3-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;"></div>
+    </div>
+    <div style="width:400px;text-align:center;flex-shrink:0;">
+      <div id="g3-emoji" style="font-size:150px;animation:float 2.2s ease-in-out infinite;min-height:180px;"></div>
+      <div id="g3-turkish" style="font-family:var(--f-display);font-size:80px;color:#FFD600;min-height:100px;"></div>
+      <div id="g3-german" style="font-size:40px;color:white;margin-top:8px;min-height:50px;"></div>
+      <button id="g3-next-btn" onclick="g3Next()" style="margin-top:18px;background:#FFD600;color:#1a1a1a;border:none;font-family:var(--f-display);font-size:36px;padding:14px 48px;border-radius:50px;cursor:pointer;animation:pulse 1.5s ease-in-out infinite;">Touch it! →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 10 — FOOD
+══════════════════════════════════════════════════════════ -->
+<section data-label="Turkish Food" style="background:linear-gradient(135deg,#BF360C 0%,#D84315 55%,#F4511E 100%);">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:55px 100px;">
+    <div class="ae" data-delay="80" data-anim="bounceIn" style="font-family:var(--f-display);font-size:90px;color:#FFD600;text-align:center;margin-bottom:30px;">Yum! Yum! Yum! 😋</div>
+    <div class="ae" data-delay="200" data-anim="slideUp" style="font-size:34px;color:rgba(255,255,255,0.8);text-align:center;margin-bottom:26px;">Türkische Köstlichkeiten · a Turkish tasting menu</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px;">
+      <div class="ae clickcard" data-delay="300" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.15);border-radius:22px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:62px;flex-shrink:0;">🥙</span>
+        <div><div style="font-family:var(--f-display);font-size:46px;color:white;">Döner</div><div style="font-size:28px;color:rgba(255,255,255,0.75);">a gift to Germany 🇩🇪</div></div>
+      </div>
+      <div class="ae clickcard" data-delay="400" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.15);border-radius:22px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:62px;flex-shrink:0;">🍞</span>
+        <div><div style="font-family:var(--f-display);font-size:46px;color:white;">Ekmek</div><div style="font-size:28px;color:rgba(255,255,255,0.75);">bread — at every meal</div></div>
+      </div>
+      <div class="ae clickcard" data-delay="500" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.15);border-radius:22px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:62px;flex-shrink:0;">🍵</span>
+        <div><div style="font-family:var(--f-display);font-size:46px;color:white;">Çay</div><div style="font-size:28px;color:rgba(255,255,255,0.75);">tea (lots of it!)</div></div>
+      </div>
+      <div class="ae clickcard" data-delay="600" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.15);border-radius:22px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:62px;flex-shrink:0;">🍬</span>
+        <div><div style="font-family:var(--f-display);font-size:46px;color:white;">Lokum</div><div style="font-size:28px;color:rgba(255,255,255,0.75);">Turkish Delight</div></div>
+      </div>
+      <div class="ae clickcard" data-delay="700" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.15);border-radius:22px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:62px;flex-shrink:0;">🧆</span>
+        <div><div style="font-family:var(--f-display);font-size:46px;color:white;">Lahmacun</div><div style="font-size:28px;color:rgba(255,255,255,0.75);">Turkish pizza 🍕</div></div>
+      </div>
+      <div class="ae clickcard" data-delay="800" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.15);border-radius:22px;padding:28px;display:flex;align-items:center;gap:18px;">
+        <span style="font-size:62px;flex-shrink:0;">🍦</span>
+        <div><div style="font-family:var(--f-display);font-size:46px;color:white;">Dondurma</div><div style="font-size:28px;color:rgba(255,255,255,0.75);">stretchy ice cream!</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 11 — FUN FACTS
+══════════════════════════════════════════════════════════ -->
+<section data-label="Fun Facts" style="background:linear-gradient(135deg,#1A237E 0%,#283593 55%,#303F9F 100%);">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:70px 120px;">
+    <div class="ae" data-delay="80" data-anim="bounceIn" style="font-family:var(--f-display);font-size:80px;color:#FFD600;text-align:center;margin-bottom:40px;">🤩 Did You Know?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;">
+      <div class="ae clickcard" data-delay="250" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.1);border-radius:22px;padding:36px;border-left:6px solid #FFD600;">
+        <div style="font-family:var(--f-display);font-size:60px;color:#FFD600;margin-bottom:8px;">01</div>
+        <div style="font-family:var(--f-display);font-size:42px;color:white;margin-bottom:8px;">No he, she or it!</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.82);">In Turkish we say 'O' for everyone. No boys, no girls — just 'O'!</div>
+      </div>
+      <div class="ae clickcard" data-delay="420" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.1);border-radius:22px;padding:36px;border-left:6px solid #EC407A;">
+        <div style="font-family:var(--f-display);font-size:60px;color:#EC407A;margin-bottom:8px;">02</div>
+        <div style="font-family:var(--f-display);font-size:42px;color:white;margin-bottom:8px;">Super-long words!</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.82);">'Türkiyemizden' = 'from our Turkey' — one giant word!</div>
+      </div>
+      <div class="ae clickcard" data-delay="590" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.1);border-radius:22px;padding:36px;border-left:6px solid #66BB6A;">
+        <div style="font-family:var(--f-display);font-size:60px;color:#66BB6A;margin-bottom:8px;">03</div>
+        <div style="font-family:var(--f-display);font-size:42px;color:white;margin-bottom:8px;">You already speak it!</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.82);">'Yogurt' comes from Turkish 'yoğurt' 🥛 — you've been speaking Turkish!</div>
+      </div>
+      <div class="ae clickcard" data-delay="760" data-anim="slideUp" onclick="bouncePop(this)" style="background:rgba(255,255,255,0.1);border-radius:22px;padding:36px;border-left:6px solid #42A5F5;">
+        <div style="font-family:var(--f-display);font-size:60px;color:#42A5F5;margin-bottom:8px;">04</div>
+        <div style="font-family:var(--f-display);font-size:42px;color:white;margin-bottom:8px;">Letters = their sound</div>
+        <div style="font-size:28px;color:rgba(255,255,255,0.82);">Turkish is super easy to read — letters always sound the same!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 12 — FINAL QUIZ
+══════════════════════════════════════════════════════════ -->
+<section data-label="Final Quiz" style="background:linear-gradient(135deg,#F57F17 0%,#F9A825 55%,#FDD835 100%);">
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 100px;">
+    <div class="ae" data-delay="80" data-anim="bounceIn" style="font-family:var(--f-display);font-size:90px;color:#1a1a1a;margin-bottom:14px;text-align:center;">🏆 The Big Finale!</div>
+    <div class="ae" data-delay="240" data-anim="slideUp" style="font-size:34px;color:#333;margin-bottom:32px;">shout the answer! · antworte laut!</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;width:100%;">
+      <div class="ae clickcard" data-delay="350" data-anim="popIn" onclick="revealQuiz(this,'Merhaba! 👋')" style="background:white;border-radius:22px;padding:32px 38px;display:flex;gap:20px;align-items:center;">
+        <span style="font-size:70px;flex-shrink:0;">👋</span>
+        <div><div style="font-family:var(--f-display);font-size:42px;color:#333;">Q1: How do you say HELLO?</div>
+        <div class="qa" style="font-family:var(--f-display);font-size:54px;color:#E30A17;opacity:0;transform:scale(0.5);transition:all .4s cubic-bezier(.34,1.56,.64,1);margin-top:8px;"></div></div>
+      </div>
+      <div class="ae clickcard" data-delay="500" data-anim="popIn" onclick="revealQuiz(this,'Kedi! 🐱')" style="background:white;border-radius:22px;padding:32px 38px;display:flex;gap:20px;align-items:center;">
+        <span style="font-size:70px;flex-shrink:0;">🐱</span>
+        <div><div style="font-family:var(--f-display);font-size:42px;color:#333;">Q2: How do you say CAT?</div>
+        <div class="qa" style="font-family:var(--f-display);font-size:54px;color:#E30A17;opacity:0;transform:scale(0.5);transition:all .4s cubic-bezier(.34,1.56,.64,1);margin-top:8px;"></div></div>
+      </div>
+      <div class="ae clickcard" data-delay="650" data-anim="popIn" onclick="revealQuiz(this,'Teşekkürler! 🙏')" style="background:white;border-radius:22px;padding:32px 38px;display:flex;gap:20px;align-items:center;">
+        <span style="font-size:70px;flex-shrink:0;">🙏</span>
+        <div><div style="font-family:var(--f-display);font-size:42px;color:#333;">Q3: How do you say THANK YOU?</div>
+        <div class="qa" style="font-family:var(--f-display);font-size:54px;color:#E30A17;opacity:0;transform:scale(0.5);transition:all .4s cubic-bezier(.34,1.56,.64,1);margin-top:8px;"></div></div>
+      </div>
+      <div class="ae clickcard" data-delay="800" data-anim="popIn" onclick="revealQuiz(this,'Üç! ✌️')" style="background:white;border-radius:22px;padding:32px 38px;display:flex;gap:20px;align-items:center;">
+        <span style="font-size:70px;flex-shrink:0;">🔺</span>
+        <div><div style="font-family:var(--f-display);font-size:42px;color:#333;">Q4: What is number 3?</div>
+        <div class="qa" style="font-family:var(--f-display);font-size:54px;color:#E30A17;opacity:0;transform:scale(0.5);transition:all .4s cubic-bezier(.34,1.56,.64,1);margin-top:8px;"></div></div>
+      </div>
+    </div>
+    <div id="quiz-win" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.65);align-items:center;justify-content:center;flex-direction:column;z-index:10;border-radius:0;">
+      <div style="font-family:var(--f-display);font-size:110px;color:#FFD600;animation:bounceIn .6s ease;">🎉 Amazing! 🎉</div>
+      <div style="font-family:var(--f-display);font-size:60px;color:white;margin-top:16px;">You know Turkish!</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SLIDE 13 — GOODBYE
+══════════════════════════════════════════════════════════ -->
+<section data-label="Goodbye" style="background:linear-gradient(135deg,#880E4F 0%,#AD1457 55%,#E91E63 100%);">
+  <div id="confetti-box" style="position:absolute;inset:0;pointer-events:none;overflow:hidden;"></div>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+    <div class="ae" data-delay="100" data-anim="bounceIn" style="font-size:150px;"><div style="animation:wiggle 1s ease-in-out infinite;">👋</div></div>
+    <div class="ae" data-delay="300" data-anim="bounceIn" style="font-family:var(--f-display);font-size:130px;color:#FFD600;text-shadow:5px 5px 0 rgba(0,0,0,0.2);line-height:1.1;">Hoşça kal!</div>
+    <div class="ae" data-delay="550" data-anim="slideUp" style="font-family:var(--f-display);font-size:68px;color:white;margin-top:10px;">Tschüss! · Goodbye!</div>
+    <div class="ae" data-delay="750" data-anim="slideUp" style="font-family:var(--f-display);font-size:50px;color:#FFD600;margin-top:26px;">being bilingual is a superpower! 🦸</div>
+    <div class="ae" data-delay="950" data-anim="fadeInScale" style="font-size:36px;color:rgba(255,255,255,0.75);margin-top:18px;">teşekkürler · thank you · danke</div>
+  </div>
+</section>
+
+</deck-stage>
+
+<script>
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+const COUNTS = [
+  {n:'1',word:'Bir',emoji:'☝️'},{n:'2',word:'İki',emoji:'👯'},{n:'3',word:'Üç',emoji:'🔺'},
+  {n:'4',word:'Dört',emoji:'🍀'},{n:'5',word:'Beş',emoji:'⭐'},{n:'6',word:'Altı',emoji:'🎲'},
+  {n:'7',word:'Yedi',emoji:'🌈'},{n:'8',word:'Sekiz',emoji:'🐙'},{n:'9',word:'Dokuz',emoji:'🎱'},
+  {n:'10',word:'On',emoji:'🎉'}
+];
+
+const G1_QS = [
+  {emoji:'🐱',word:'Kedi',opts:[{t:'Kedi',e:'🐱'},{t:'Köpek',e:'🐶'},{t:'Kurbağa',e:'🐸'}],ans:0,meaning:'Cat · Katze'},
+  {emoji:'🐶',word:'Köpek',opts:[{t:'İnek',e:'🐄'},{t:'Köpek',e:'🐶'},{t:'Aslan',e:'🦁'}],ans:1,meaning:'Dog · Hund'},
+  {emoji:'🐄',word:'İnek',opts:[{t:'Koyun',e:'🐑'},{t:'Kedi',e:'🐱'},{t:'İnek',e:'🐄'}],ans:2,meaning:'Cow · Kuh'},
+  {emoji:'🐸',word:'Kurbağa',opts:[{t:'Kurbağa',e:'🐸'},{t:'Köpek',e:'🐶'},{t:'Koyun',e:'🐑'}],ans:0,meaning:'Frog · Frosch'},
+  {emoji:'🦁',word:'Aslan',opts:[{t:'Kedi',e:'🐱'},{t:'Aslan',e:'🦁'},{t:'İnek',e:'🐄'}],ans:1,meaning:'Lion · Löwe'},
+];
+
+const G2_WORDS = [
+  {emoji:'👋',word:'Merhaba!',trans:'Hello · Hallo'},
+  {emoji:'❤️',word:'Seni seviyorum',trans:'I love you · Ich liebe dich'},
+  {emoji:'😍',word:'Çok güzel!',trans:'So beautiful · Sehr schön'},
+  {emoji:'🙏',word:'Teşekkür ederim',trans:'Thank you · Danke'},
+];
+
+const BODY = [
+  {emoji:'👁️',t:'Göz',g:'Auge · Eye'},
+  {emoji:'👂',t:'Kulak',g:'Ohr · Ear'},
+  {emoji:'👃',t:'Burun',g:'Nase · Nose'},
+  {emoji:'👄',t:'Ağız',g:'Mund · Mouth'},
+  {emoji:'🦷',t:'Diş',g:'Zahn · Tooth'},
+  {emoji:'✋',t:'El',g:'Hand'},
+  {emoji:'🦶',t:'Ayak',g:'Fuß · Foot'},
+  {emoji:'💛',t:'Kalp',g:'Herz · Heart'},
+];
+
+// ══════════════════════════════════════
+// AUDIO
+// ══════════════════════════════════════
+let audioCtx;
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(freqs, dur) {
+  try {
+    const ctx = getAudio();
+    freqs.forEach(({f,t,v=0.25}) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = f;
+      o.type = 'sine';
+      g.gain.setValueAtTime(v, ctx.currentTime + t);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + dur);
+      o.start(ctx.currentTime + t);
+      o.stop(ctx.currentTime + t + dur + 0.05);
+    });
+  } catch(e) {}
+}
+function playCorrect() { playTone([{f:523,t:0},{f:659,t:.1},{f:784,t:.2},{f:1047,t:.3}], .3); }
+function playWrong()   { playTone([{f:220,t:0},{f:165,t:.15}], .35); }
+function playClick()   { playTone([{f:700,t:0}], .12); }
+function playFanfare() {
+  playTone([{f:523,t:0},{f:659,t:.1},{f:784,t:.2},{f:1047,t:.3},{f:784,t:.45},{f:1047,t:.55},{f:1319,t:.7}], .3);
+}
+
+// ── REAL ANIMAL SOUNDS via Web Audio synthesis ──
+function playAnimalSound(animal) {
+  try {
+    const ctx = getAudio();
+    const t = ctx.currentTime;
+    if (animal === 'dog') {
+      // "Hav hav" — sharp bark: noise burst + pitch drop
+      for (let b = 0; b < 2; b++) {
+        const buf = ctx.createBuffer(1, ctx.sampleRate * 0.18, ctx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * Math.pow(1 - i/d.length, 1.5);
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        const bpf = ctx.createBiquadFilter();
+        bpf.type = 'bandpass'; bpf.frequency.value = 900; bpf.Q.value = 1.2;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(1.8, t + b*0.28);
+        g.gain.exponentialRampToValueAtTime(0.001, t + b*0.28 + 0.2);
+        src.connect(bpf); bpf.connect(g); g.connect(ctx.destination);
+        src.start(t + b*0.28);
+      }
+    } else if (animal === 'cat') {
+      // "Miyav" — rising then falling tone
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(400, t);
+      o.frequency.linearRampToValueAtTime(900, t + 0.15);
+      o.frequency.linearRampToValueAtTime(550, t + 0.45);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.35, t + 0.08);
+      g.gain.setValueAtTime(0.35, t + 0.35);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+      const f = ctx.createBiquadFilter();
+      f.type = 'lowpass'; f.frequency.value = 1800;
+      o.connect(f); f.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + 0.75);
+    } else if (animal === 'cow') {
+      // "Möö" — low nasal moo
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(100, t);
+      o.frequency.linearRampToValueAtTime(160, t + 0.1);
+      o.frequency.setValueAtTime(160, t + 0.6);
+      o.frequency.linearRampToValueAtTime(110, t + 1.1);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.5, t + 0.12);
+      g.gain.setValueAtTime(0.5, t + 0.7);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 1.2);
+      const f = ctx.createBiquadFilter();
+      f.type = 'lowpass'; f.frequency.value = 600;
+      o.connect(f); f.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + 1.3);
+    } else if (animal === 'sheep') {
+      // "Mee" — wavery bleat
+      const o = ctx.createOscillator();
+      const lfo = ctx.createOscillator();
+      const lfoG = ctx.createGain();
+      const g = ctx.createGain();
+      o.type = 'sawtooth'; o.frequency.value = 380;
+      lfo.type = 'sine'; lfo.frequency.value = 7;
+      lfoG.gain.value = 40;
+      lfo.connect(lfoG); lfoG.connect(o.frequency);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.4, t + 0.08);
+      g.gain.setValueAtTime(0.4, t + 0.5);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.85);
+      const f = ctx.createBiquadFilter();
+      f.type = 'bandpass'; f.frequency.value = 900; f.Q.value = 0.8;
+      o.connect(f); f.connect(g); g.connect(ctx.destination);
+      o.start(t); lfo.start(t);
+      o.stop(t + 0.9); lfo.stop(t + 0.9);
+    } else if (animal === 'frog') {
+      // "Vrak vrak" — two croaks with a click
+      for (let b = 0; b < 2; b++) {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'square';
+        o.frequency.setValueAtTime(180, t + b*0.32);
+        o.frequency.linearRampToValueAtTime(120, t + b*0.32 + 0.18);
+        g.gain.setValueAtTime(0.5, t + b*0.32);
+        g.gain.exponentialRampToValueAtTime(0.001, t + b*0.32 + 0.22);
+        const f = ctx.createBiquadFilter();
+        f.type = 'bandpass'; f.frequency.value = 400; f.Q.value = 2;
+        o.connect(f); f.connect(g); g.connect(ctx.destination);
+        o.start(t + b*0.32); o.stop(t + b*0.32 + 0.25);
+      }
+    } else if (animal === 'lion') {
+      // "Raaar" — deep rumble building to roar
+      const buf = ctx.createBuffer(1, ctx.sampleRate * 1.4, ctx.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) {
+        const env = Math.min(1, i / (ctx.sampleRate * 0.3)) * Math.pow(1 - i/d.length, 0.3);
+        d[i] = (Math.random()*2-1) * env;
+      }
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      const lpf = ctx.createBiquadFilter();
+      lpf.type = 'lowpass'; lpf.frequency.value = 350;
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(2.5, t + 0.3);
+      g.gain.setValueAtTime(2.5, t + 0.9);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
+      src.connect(lpf); lpf.connect(g); g.connect(ctx.destination);
+      src.start(t);
+    }
+  } catch(e) { console.log('animal sound err', e); }
+}
+
+// ══════════════════════════════════════
+// SLIDE 2 OVERLAYS
+// ══════════════════════════════════════
+function openOverlay(id) {
+  document.getElementById(id).classList.add('open');
+}
+function closeOverlay(id) {
+  document.getElementById(id).classList.remove('open');
+}
+function showPlaneAnim() {
+  openOverlay('plane-overlay');
+  // Restart animation by re-inserting elements
+  const map = document.getElementById('plane-map');
+  const oldPlane = document.getElementById('plane-icon');
+  const oldTrail = document.getElementById('plane-trail');
+  // Remove and re-add to restart CSS animations
+  oldPlane.remove(); oldTrail.remove();
+  const trail = document.createElement('div');
+  trail.id = 'plane-trail';
+  trail.className = 'plane-trail';
+  const plane = document.createElement('div');
+  plane.id = 'plane-icon';
+  plane.className = 'plane-icon';
+  plane.textContent = '✈️';
+  map.appendChild(trail);
+  map.appendChild(plane);
+  playClick();
+}
+function showIstanbul() {
+  openOverlay('istanbul-overlay');
+  playClick();
+}
+function showBeach() {
+  openOverlay('beach-overlay');
+  playClick();
+}
+
+// ══════════════════════════════════════
+// NUMBER ZOOM (SLIDE 4)
+// ══════════════════════════════════════
+function showNumZoom(n, word, emoji) {
+  const ov = document.getElementById('num-zoom-overlay');
+  document.getElementById('nz-emoji').textContent = emoji;
+  document.getElementById('nz-num').textContent = n;
+  document.getElementById('nz-word').textContent = word;
+  ov.classList.add('open');
+  playClick();
+}
+function closeNumZoom() {
+  document.getElementById('num-zoom-overlay').classList.remove('open');
+}
+
+// ══════════════════════════════════════
+// COLOR ZOOM (SLIDE 6)
+// ══════════════════════════════════════
+function showColor(bg, word, trans, emoji, textColor) {
+  const ov = document.getElementById('color-zoom-overlay');
+  const inner = document.getElementById('color-zoom-inner');
+  const tc = textColor || 'white';
+  ov.style.background = bg.startsWith('linear') ? bg : bg + 'ee';
+  inner.style.background = 'rgba(0,0,0,0.18)';
+  document.getElementById('cz-emoji').textContent = emoji;
+  document.getElementById('cz-word').style.color = tc;
+  document.getElementById('cz-word').textContent = word;
+  document.getElementById('cz-trans').style.color = tc === '#333' ? '#555' : 'rgba(255,255,255,0.85)';
+  document.getElementById('cz-trans').textContent = trans;
+  ov.classList.add('open');
+  playClick();
+}
+function closeColorZoom() {
+  document.getElementById('color-zoom-overlay').classList.remove('open');
+}
+
+// ══════════════════════════════════════
+// ANIMATION ENGINE (pure JS — inline style beats CSS cascade)
+// ══════════════════════════════════════
+const ANIMS = {
+  bounceIn:    'bounceIn .65s cubic-bezier(.2,.8,.2,1) both',
+  slideUp:     'slideUp .55s cubic-bezier(.2,.8,.2,1) both',
+  slideLeft:   'slideLeft .55s cubic-bezier(.2,.8,.2,1) both',
+  popIn:       'popIn .5s cubic-bezier(.34,1.56,.64,1) both',
+  fadeInScale: 'fadeInScale .5s ease both',
+};
+const ANIM_DUR = { bounceIn:650, slideUp:550, slideLeft:550, popIn:500, fadeInScale:500 };
+const aeTimers = new WeakMap();
+
+function applyDelays(root) {
+  const target = root || document;
+  target.querySelectorAll('.ae').forEach(el => {
+    // Cancel any stale timers from previous visit
+    const old = aeTimers.get(el);
+    if (old) { clearTimeout(old.t1); clearTimeout(old.t2); }
+    // Reset
+    el.classList.remove('ae-done');
+    el.style.animation = 'none';
+    el.style.opacity   = '0';
+    const delay   = parseInt(el.dataset.delay || '0');
+    const animKey = el.dataset.anim || 'slideUp';
+    const anim    = ANIMS[animKey] || ANIMS.slideUp;
+    const dur     = ANIM_DUR[animKey] || 550;
+    const t1 = setTimeout(() => {
+      el.style.opacity   = '';
+      el.style.animation = anim;
+      const t2 = setTimeout(() => {
+        el.style.opacity   = '1';
+        el.style.animation = '';
+        el.classList.add('ae-done');
+        aeTimers.delete(el);
+      }, dur + 60);
+      const rec = aeTimers.get(el) || {};
+      aeTimers.set(el, { ...rec, t2 });
+    }, Math.max(delay, 1));
+    aeTimers.set(el, { t1 });
+  });
+}
+
+// ══════════════════════════════════════
+// STARS (SLIDE 1)
+// ══════════════════════════════════════
+function buildStars() {
+  const c = document.getElementById('stars-bg');
+  if (!c) return;
+  c.innerHTML = '';
+  for (let i=0; i<55; i++) {
+    const s = document.createElement('div');
+    s.style.cssText = `position:absolute;font-size:${8+Math.random()*18}px;color:rgba(255,255,255,0.8);
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      animation:twinkle ${1.5+Math.random()*3}s ease-in-out infinite;
+      animation-delay:${Math.random()*3}s;`;
+    s.textContent = '★';
+    c.appendChild(s);
+  }
+}
+
+// ══════════════════════════════════════
+// TITLE LETTERS (SLIDE 1)
+// ══════════════════════════════════════
+function buildTitleLetters() {
+  const c = document.getElementById('title-letters');
+  if (!c) return;
+  const word = 'Merhaba!';
+  const colors = ['#FFD600','#FF6B35','#FFD600','#FF6B35','#FFD600','#FF6B35','#FFD600','#FFD600'];
+  c.innerHTML = word.split('').map((ch,i) =>
+    `<span style="font-family:'Fredoka One',cursive;font-size:200px;color:${colors[i]};
+      text-shadow:6px 6px 0 #E30A17,12px 12px 30px rgba(0,0,0,0.35);
+      display:inline-block;animation:letterDance ${2+Math.random()*1.5}s ease-in-out infinite;
+      animation-delay:${i*0.15}s;">${ch}</span>`
+  ).join('');
+}
+
+// ══════════════════════════════════════
+// COUNTING GRID (SLIDE 4)
+// ══════════════════════════════════════
+function buildCountGrid() {
+  const g = document.getElementById('count-grid');
+  if (!g) return;
+  g.innerHTML = COUNTS.map((c,i) =>
+    `<div class="ae clickcard" data-anim="popIn" data-delay="${250+i*80}" style="background:rgba(255,255,255,0.15);border-radius:20px;padding:18px 8px;text-align:center;" onclick="showNumZoom('${c.n}','${c.word}','${c.emoji}')">
+      <div style="font-size:48px;">${c.emoji}</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:58px;color:#FFD600;">${c.n}</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:36px;color:white;">${c.word}</div>
+    </div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════
+// GAME 3 BODY PARTS GRID
+// ══════════════════════════════════════
+let g3idx = 0;
+function buildG3Grid() {
+  const g = document.getElementById('g3-grid');
+  if (!g) return;
+  g.innerHTML = BODY.map((b,i) =>
+    `<div class="bp-card ae" data-anim="slideUp" style="--anim-delay:${200+i*60}ms" id="bp-${i}" onclick="g3Go(${i})">
+      <span style="font-size:38px;">${b.emoji}</span>
+      <div>
+        <div style="font-family:'Fredoka One',cursive;font-size:36px;color:white;">${b.t}</div>
+        <div style="font-size:24px;color:rgba(255,255,255,0.65);">${b.g}</div>
+      </div>
+    </div>`
+  ).join('');
+  g3Go(0);
+}
+function g3Go(i) {
+  g3idx = i;
+  BODY.forEach((_,j) => {
+    const el = document.getElementById('bp-'+j);
+    if (el) el.classList.toggle('active', j===i);
+  });
+  const b = BODY[i];
+  const em = document.getElementById('g3-emoji');
+  const tr = document.getElementById('g3-turkish');
+  const de = document.getElementById('g3-german');
+  if (!em) return;
+  em.style.transform = 'scale(0)';
+  setTimeout(() => {
+    em.textContent = b.emoji;
+    tr.textContent = b.t;
+    de.textContent = b.g;
+    em.style.transition = 'transform .4s cubic-bezier(.34,1.56,.64,1)';
+    em.style.transform = 'scale(1)';
+  }, 150);
+  playClick();
+}
+function g3Next() {
+  g3Go((g3idx + 1) % BODY.length);
+}
+
+// ══════════════════════════════════════
+// GAME 1
+// ══════════════════════════════════════
+let g1idx = 0, g1score = 0, g1answered = false;
+function initG1() {
+  g1idx = 0; g1score = 0; g1answered = false;
+  renderG1();
+}
+function renderG1() {
+  if (g1idx >= G1_QS.length) {
+    document.getElementById('g1-emoji').textContent = '🏆';
+    document.getElementById('g1-prompt').textContent = `Score: ${g1score}/${G1_QS.length} 🎉`;
+    document.getElementById('g1-options').innerHTML = '';
+    document.getElementById('g1-score').textContent = '';
+    document.getElementById('g1-next').style.display = 'none';
+    if (g1score === G1_QS.length) playFanfare();
+    return;
+  }
+  const q = G1_QS[g1idx];
+  g1answered = false;
+  const em = document.getElementById('g1-emoji');
+  // Quick swap animation
+  em.style.transition = 'transform .2s ease, opacity .2s ease';
+  em.style.transform = 'scale(0)';
+  em.style.opacity = '0';
+  setTimeout(() => {
+    em.textContent = q.emoji;
+    em.style.transform = 'scale(1)';
+    em.style.opacity = '1';
+  }, 180);
+  document.getElementById('g1-prompt').textContent = 'What does this mean? · Was bedeutet das?';
+  const fb = document.getElementById('g1-feedback');
+  fb.style.opacity = '0'; fb.style.transform = 'scale(0)';
+  document.getElementById('g1-next').style.display = 'none';
+  document.getElementById('g1-score').textContent = `Question ${g1idx+1} of ${G1_QS.length}`;
+  const opts = document.getElementById('g1-options');
+  opts.innerHTML = q.opts.map((o,i) =>
+    `<button class="opt-btn" onclick="answerG1(this,${i},${q.ans},'${q.meaning}')" style="font-size:38px;padding:18px 36px;display:flex;flex-direction:column;align-items:center;gap:6px;">
+      <span style="font-size:62px;">${o.e}</span>
+      <span>${o.t}</span>
+    </button>`
+  ).join('');
+}
+function answerG1(btn, chosen, correct, meaning) {
+  if (g1answered) return;
+  g1answered = true;
+  const fb = document.getElementById('g1-feedback');
+  if (chosen === correct) {
+    btn.classList.add('correct');
+    fb.textContent = '⭐ Correct! — ' + meaning;
+    fb.style.color = '#66FF88';
+    g1score++;
+    playCorrect();
+  } else {
+    btn.classList.add('wrong');
+    document.getElementById('g1-options').querySelectorAll('.opt-btn')[correct].classList.add('correct');
+    fb.textContent = '😅 The answer is: ' + G1_QS[g1idx].word + '!';
+    fb.style.color = '#FF8888';
+    playWrong();
+  }
+  fb.style.opacity = '1'; fb.style.transform = 'scale(1)';
+  document.getElementById('g1-next').style.display = 'inline-block';
+}
+function nextG1() { g1idx++; renderG1(); }
+
+// ══════════════════════════════════════
+// GAME 2
+// ══════════════════════════════════════
+let g2idx = 0;
+function initG2() { g2idx = 0; renderG2(); }
+function renderG2() {
+  const w = G2_WORDS[g2idx];
+  const wd = document.getElementById('g2-word');
+  const tr = document.getElementById('g2-trans');
+  const em = document.getElementById('g2-emoji');
+  const cl = document.getElementById('g2-clap');
+  const pr = document.getElementById('g2-prog');
+  wd.style.transform = 'scale(0) rotate(-8deg)';
+  setTimeout(() => {
+    em.textContent = w.emoji;
+    wd.textContent = w.word;
+    tr.textContent = w.trans;
+    wd.style.transition = 'all .5s cubic-bezier(.34,1.56,.64,1)';
+    wd.style.transform = 'scale(1) rotate(0deg)';
+  }, 100);
+  const isLast = g2idx === G2_WORDS.length - 1;
+  cl.style.opacity = isLast ? '1' : '0';
+  pr.textContent = `${g2idx+1} of ${G2_WORDS.length}`;
+  playClick();
+}
+function g2Next() {
+  if (g2idx < G2_WORDS.length - 1) { g2idx++; renderG2(); }
+}
+function g2Prev() {
+  if (g2idx > 0) { g2idx--; renderG2(); }
+}
+
+// ══════════════════════════════════════
+// INTERACTIONS
+// ══════════════════════════════════════
+function bouncePop(el) {
+  el.style.transition='transform .15s';
+  el.style.transform='scale(1.1) rotate(-2deg)';
+  setTimeout(()=>{ el.style.transform='scale(1) rotate(0deg)'; },180);
+  playClick();
+}
+function animateNum(el) {
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = 'bounceIn .5s cubic-bezier(.34,1.56,.64,1)';
+  playClick();
+}
+function animalSound(el, sound) {
+  const snd = el.querySelector('.snd');
+  if (!snd) return;
+  snd.textContent = sound;
+  snd.style.opacity = '1'; snd.style.transform = 'scale(1)';
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = 'correctFlash .4s ease forwards';
+  playClick();
+  setTimeout(() => { snd.style.opacity='0'; snd.style.transform='scale(0)'; }, 2200);
+}
+
+// QUIZ REVEAL
+let quizRevealed = 0;
+function resetQuiz() {
+  document.querySelectorAll('#quiz-win').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.qa').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'scale(0.5)';
+    el.textContent = '';
+  });
+  document.querySelectorAll('[onclick^="revealQuiz"]').forEach(el => {
+    el.style.background = 'white';
+  });
+}
+function revealQuiz(card, answer) {
+  const qa = card.querySelector('.qa');
+  if (!qa || qa.style.opacity==='1') return;
+  qa.textContent = answer;
+  qa.style.opacity = '1'; qa.style.transform = 'scale(1)';
+  card.style.background = '#FFFDE7';
+  playCorrect();
+  quizRevealed++;
+  if (quizRevealed >= 4) {
+    setTimeout(() => {
+      const w = document.getElementById('quiz-win');
+      w.style.display = 'flex';
+      playFanfare();
+      launchConfetti(w);
+    }, 600);
+  }
+}
+
+// ══════════════════════════════════════
+// CONFETTI
+// ══════════════════════════════════════
+function launchConfetti(container) {
+  const colors = ['#FFD600','#E30A17','#1565C0','#2ECC71','#EC407A','#FF6B35','white'];
+  for (let i=0; i<80; i++) {
+    const p = document.createElement('div');
+    const c = colors[Math.floor(Math.random()*colors.length)];
+    const size = 10+Math.random()*18;
+    const dx = (Math.random()-0.5)*400;
+    p.style.cssText = `
+      position:absolute;
+      width:${size}px;height:${size*(0.4+Math.random()*0.6)}px;
+      background:${c};
+      border-radius:${Math.random()>0.5?'50%':'3px'};
+      left:${Math.random()*100}%;
+      top:-20px;
+      --dx:${dx}px;
+      animation:confettiFall ${2.5+Math.random()*2}s ease-in forwards;
+      animation-delay:${Math.random()*1.5}s;
+      pointer-events:none;
+    `;
+    container.appendChild(p);
+  }
+}
+function launchSlide13Confetti() {
+  const c = document.getElementById('confetti-box');
+  if (!c) return;
+  c.innerHTML='';
+  launchConfetti(c);
+}
+
+// ══════════════════════════════════════
+// SLIDE CHANGE HANDLER
+// Build dynamic content FIRST so .ae elements exist before CSS
+// animation rules fire. applyDelays() stamps --anim-delay on any
+// newly-built elements so the CSS stagger works.
+// ══════════════════════════════════════
+const stage = document.querySelector('deck-stage');
+
+stage.addEventListener('slidechange', e => {
+  const idx = e.detail.index;
+  const slide = e.detail.slide;
+  if (!slide) return;
+
+  // 1. Build / init dynamic content first
+  if (idx === 0)  { buildStars(); buildTitleLetters(); }
+  if (idx === 3)  { buildCountGrid(); }
+  if (idx === 6)  { initG1(); }
+  if (idx === 7)  { initG2(); }
+  if (idx === 8)  { buildG3Grid(); }
+  if (idx === 11) { quizRevealed = 0; resetQuiz(); }
+  if (idx === 12) { setTimeout(launchSlide13Confetti, 800); }
+
+  // 2. Stamp delays on any newly-created .ae elements
+  applyDelays(slide);
+});
+</script>
+</body>
+</html>
