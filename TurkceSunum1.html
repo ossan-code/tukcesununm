@@ -6,8 +6,92 @@
 <title>Merhaba! 🇹🇷 Turkish for Kindergarten</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
-<script src="deck-stage.js"></script>
 <style>
+/* ── SELF-CONTAINED DECK SYSTEM ── */
+html, body { width:100%; height:100%; margin:0; padding:0; overflow:hidden; background:#000; }
+
+#deck-stage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+  user-select: none;
+}
+
+#deck-slides {
+  position: absolute;
+  inset: 0;
+}
+
+/* Each section is a slide */
+#deck-slides > section {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+#deck-slides > section.active {
+  display: block;
+}
+
+/* Navigation arrows */
+#deck-prev, #deck-next {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 500;
+  background: rgba(0,0,0,0.35);
+  color: white;
+  border: none;
+  font-size: 38px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, opacity 0.2s;
+  opacity: 0.55;
+}
+#deck-prev { left: 14px; }
+#deck-next { right: 14px; }
+#deck-prev:hover, #deck-next:hover { background: rgba(0,0,0,0.7); opacity: 1; }
+#deck-prev:disabled, #deck-next:disabled { opacity: 0.15; cursor: default; }
+
+/* Slide counter */
+#deck-counter {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 500;
+  display: flex;
+  gap: 8px;
+}
+#deck-counter span {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.35);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+#deck-counter span.active {
+  background: white;
+  transform: scale(1.3);
+}
+
+/* Scale all content to fit viewport maintaining 16:9 */
+#deck-scaler {
+  position: absolute;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: top left;
+  top: 0; left: 0;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
@@ -259,7 +343,9 @@ section { font-family: var(--f-body); overflow: hidden; position: relative; }
 </style>
 </head>
 <body>
-<deck-stage width="1920" height="1080">
+<div id="deck-stage">
+  <div id="deck-scaler">
+    <div id="deck-slides">
 
 <!-- ══════════════════════════════════════════════════════════
      SLIDE 1 — TITLE
@@ -727,7 +813,14 @@ section { font-family: var(--f-body); overflow: hidden; position: relative; }
   </div>
 </section>
 
-</deck-stage>
+    </div><!-- #deck-slides -->
+  </div><!-- #deck-scaler -->
+
+  <!-- Navigation -->
+  <button id="deck-prev" onclick="deckGo(-1)" title="Previous">&#8592;</button>
+  <button id="deck-next" onclick="deckGo(1)" title="Next">&#8594;</button>
+  <div id="deck-counter"></div>
+</div><!-- #deck-stage -->
 
 <script>
 // ══════════════════════════════════════
@@ -1304,30 +1397,68 @@ function launchSlide13Confetti() {
 }
 
 // ══════════════════════════════════════
-// SLIDE CHANGE HANDLER
-// Build dynamic content FIRST so .ae elements exist before CSS
-// animation rules fire. applyDelays() stamps --anim-delay on any
-// newly-built elements so the CSS stagger works.
+// SELF-CONTAINED DECK ENGINE
 // ══════════════════════════════════════
-const stage = document.querySelector('deck-stage');
+let deckIdx = 0;
+const slides = Array.from(document.querySelectorAll('#deck-slides > section'));
+const counter = document.getElementById('deck-counter');
+const prevBtn = document.getElementById('deck-prev');
+const nextBtn = document.getElementById('deck-next');
 
-stage.addEventListener('slidechange', e => {
-  const idx = e.detail.index;
-  const slide = e.detail.slide;
-  if (!slide) return;
+function deckScale() {
+  const scaler = document.getElementById('deck-scaler');
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const scale = Math.min(vw / 1920, vh / 1080);
+  scaler.style.transform = `scale(${scale})`;
+  scaler.style.left = ((vw - 1920 * scale) / 2) + 'px';
+  scaler.style.top  = ((vh - 1080 * scale) / 2) + 'px';
+}
+window.addEventListener('resize', deckScale);
+deckScale();
 
-  // 1. Build / init dynamic content first
-  if (idx === 0)  { buildStars(); buildTitleLetters(); }
-  if (idx === 3)  { buildCountGrid(); }
-  if (idx === 6)  { initG1(); }
-  if (idx === 7)  { initG2(); }
-  if (idx === 8)  { buildG3Grid(); }
-  if (idx === 11) { quizRevealed = 0; resetQuiz(); }
-  if (idx === 12) { setTimeout(launchSlide13Confetti, 800); }
-
-  // 2. Stamp delays on any newly-created .ae elements
-  applyDelays(slide);
+// Build dot counter
+slides.forEach((s, i) => {
+  const dot = document.createElement('span');
+  dot.onclick = () => deckGoto(i);
+  counter.appendChild(dot);
 });
+
+function deckGoto(idx) {
+  if (idx < 0 || idx >= slides.length) return;
+
+  slides[deckIdx].classList.remove('active');
+  deckIdx = idx;
+  const slide = slides[deckIdx];
+  slide.classList.add('active');
+
+  // Update dots
+  counter.querySelectorAll('span').forEach((d, i) => d.classList.toggle('active', i === deckIdx));
+  prevBtn.disabled = (deckIdx === 0);
+  nextBtn.disabled = (deckIdx === slides.length - 1);
+
+  // Fire per-slide init
+  if (deckIdx === 0)  { buildStars(); buildTitleLetters(); }
+  if (deckIdx === 3)  { buildCountGrid(); }
+  if (deckIdx === 6)  { initG1(); }
+  if (deckIdx === 7)  { initG2(); }
+  if (deckIdx === 8)  { buildG3Grid(); }
+  if (deckIdx === 11) { quizRevealed = 0; resetQuiz(); }
+  if (deckIdx === 12) { setTimeout(launchSlide13Confetti, 800); }
+
+  applyDelays(slide);
+}
+
+function deckGo(dir) { deckGoto(deckIdx + dir); }
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') deckGo(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp') deckGo(-1);
+});
+
+// Start on slide 0
+deckGoto(0);
 </script>
 </body>
 </html>
